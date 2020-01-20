@@ -5,7 +5,7 @@ For most this is considered the hardest as this requires the most amount of work
 To start, you'll need the following:
 
 * An SSDT/DSDT dump\(done by pressing F4 at Clover boot screen\)
-* [AISL Compiler](https://bitbucket.org/RehabMan/acpica/downloads/)
+* [IASL Compiler](https://bitbucket.org/RehabMan/acpica/downloads/)
 * [MaciASL](https://sourceforge.net/projects/maciasl/)
 
 If you open your EFI and go within EFI/CLOVER/ACPI/origin, you'll find a bunch of .aml files. These are the files we'll be playing with so grab them and put them in a folder somewhere on your hack
@@ -77,14 +77,15 @@ For Nvidia Users:
 ```text
 DefinitionBlock ("", "SSDT", 2, "hack", "spoof", 0)
 {
-    Method(_SB.PCI0.PEG0.PEGP._DSM, 4)
+    External (_SB.PCI0.PEG0.PEGP, DeviceObj)                        // Defining the device path for the DSM
+    Method(_SB.PCI0.PEG0.PEGP._DSM, 4)                              // Defining the Method and path
     {
         If (!Arg2) { Return (Buffer() { 0x03 } ) }
         Return (Package()
         {
-            "name", Buffer() { "#display" },
-            "IOName", "#display",
-            "class-code", Buffer() { 0xFF, 0xFF, 0xFF, 0xFF },
+            "name", Buffer() { "#display" },                        // bogus naming
+            "IOName", "#display",                                   // bogus naming
+            "class-code", Buffer() { 0xFF, 0xFF, 0xFF, 0xFF },      // bogus class-code to disable the usage of the device
         })
     }
 }
@@ -95,16 +96,17 @@ For AMD users:
 ```text
 DefinitionBlock ("", "SSDT", 2, "hack", "spoof", 0)
 {
-    Method(_SB.PCI0.PEG0.PEGP._DSM, 4)
+    External (_SB.PCI0.PEG0.PEGP, DeviceObj)                        // Defining the device path for the DSM
+    Method(_SB.PCI0.PEG0.PEGP._DSM, 4)                              // Defining the Method and path
     {
         If (!Arg2) { Return (Buffer() { 0x03 } ) }
         Return (Package()
         {
-            "name", Buffer() { "#display" },
-            "IOName", "#display",
-            "class-code", Buffer() { 0xFF, 0xFF, 0xFF, 0xFF },
-            "vendor-id", Buffer() { 0xFF, 0xFF, 0,  0 },
-            "device-id", Buffer() { 0xFF, 0xFF, 0, 0 },
+            "name", Buffer() { "#display" },                        // bogus naming
+            "IOName", "#display",                                   // bogus naming
+            "class-code", Buffer() { 0xFF, 0xFF, 0xFF, 0xFF },      // bogus class-code to disable the usage of the device
+            "vendor-id", Buffer() { 0xFF, 0xFF, 0,  0 },            // bogus vendor-id so that it doesnt attach to macOS drivers
+            "device-id", Buffer() { 0xFF, 0xFF, 0, 0 },             // bogus driver-id so that it doesnt attach to macOS drivers
         })
     }
 }
